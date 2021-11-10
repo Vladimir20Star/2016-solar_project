@@ -18,16 +18,16 @@ def read_space_objects_data_from_file(input_filename):
             if len(line.strip()) == 0 or line[0] == '#':
                 continue  # пустые строки и строки-комментарии пропускаем
             object_type = line.split()[0].lower()
-            if object_type == "star":
+            if object_type == Star.type:
                 star = Star()
                 parse_star_parameters(line.split(), star)
                 objects.append(star)
-            if object_type == "planet":
+            elif object_type == Planet.type:
                 planet = Planet()
                 parse_planet_parameters(line.split(), planet)
                 objects.append(planet)
             else:
-                print("Unknown space object")
+                print("Unknown space object: ", object_type)
 
     return objects
 
@@ -94,7 +94,7 @@ def write_space_objects_data_to_file(output_filename, space_objects):
     """
     with open(output_filename, 'w') as out_file:
         for obj in space_objects:
-            print(f"{type(obj)} {obj.R} {obj.color} {obj.m} {obj.x} {obj.y} {obj.Vx} {obj.Vy}", file=out_file)
+            print(f"{obj.type} {obj.R} {obj.color} {obj.m} {obj.x} {obj.y} {obj.Vx} {obj.Vy}", file=out_file)
 
 
 if __name__ == "__main__":
