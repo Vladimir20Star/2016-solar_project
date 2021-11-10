@@ -3,29 +3,35 @@
 
 """Модуль визуализации.
 Нигде, кроме этого модуля, не используются экранные координаты объектов.
-Функции, создающие гaрафические объекты и перемещающие их на экране, принимают физические координаты
+Функции, создающие графические объекты и перемещающие их на экране, принимают физические координаты
 """
 
-header_font = "Arial-16"
-"""Шрифт в заголовке"""
-
-window_width = 800
+WINDOW_WIDTH = 800
 """Ширина окна"""
 
-window_height = 800
+WINDOW_HEIGHT = 750
 """Высота окна"""
 
-scale_factor = None
-"""Масштабирование экранных координат по отношению к физическим.
-Тип: float
-Мера: количество пикселей на один метр."""
+HEADER_FONT = "Arial-16"
+"""Шрифт в заголовке"""
+
+
+class GlobalVariablesVis:
+    """класс глобальных переменных этого файла"""
+
+    scale_factor = None
+    """Масштабирование экранных координат по отношению к физическим.
+    Тип: float
+    Мера: количество пикселей на один метр."""
+
+
+glob_vis = GlobalVariablesVis()
 
 
 def calculate_scale_factor(max_distance):
-    """Вычисляет значение глобальной переменной **scale_factor** по данной характерной длине"""
-    global scale_factor
-    scale_factor = 0.4*min(window_height, window_width)/max_distance
-    print('Scale factor:', scale_factor)
+    """Вычисляет значение глобальной переменной **glob_vis.scale_factor** по данной характерной длине"""
+    glob_vis.scale_factor = 0.4 * min(WINDOW_HEIGHT, WINDOW_WIDTH) / max_distance
+    print('Scale factor:', glob_vis.scale_factor)
 
 
 def scale_x(x):
@@ -38,8 +44,7 @@ def scale_x(x):
 
     **x** — x-координата модели.
     """
-
-    return int(x*scale_factor) + window_width//2
+    return int(x * glob_vis.scale_factor) + WINDOW_WIDTH // 2
 
 
 def scale_y(y):
@@ -53,8 +58,7 @@ def scale_y(y):
 
     **y** — y-координата модели.
     """
-
-    return y  # FIXME: not done yet
+    return int(y * glob_vis.scale_factor) + WINDOW_HEIGHT // 2
 
 
 def create_star_image(space, star):
@@ -65,11 +69,10 @@ def create_star_image(space, star):
     **space** — холст для рисования.
     **star** — объект звезды.
     """
-
     x = scale_x(star.x)
     y = scale_y(star.y)
     r = star.R
-    star.image = space.create_oval([x - r, y - r], [x + r, y + r], fill=star.color)
+    star.image = space.create_oval([x - r, y - r], [x + r, y + r], fill=star.color, width=1)
 
 
 def create_planet_image(space, planet):
@@ -80,7 +83,10 @@ def create_planet_image(space, planet):
     **space** — холст для рисования.
     **planet** — объект планеты.
     """
-    pass  # FIXME: сделать как у звезды
+    x = scale_x(planet.x)
+    y = scale_y(planet.y)
+    r = planet.R
+    planet.image = space.create_oval([x - r, y - r], [x + r, y + r], fill=planet.color, width=1)
 
 
 def update_system_name(space, system_name):
@@ -92,7 +98,7 @@ def update_system_name(space, system_name):
     **space** — холст для рисования.
     **system_name** — название системы тел.
     """
-    space.create_text(30, 80, tag="header", text=system_name, font=header_font)
+    space.create_text(30, 80, tag="header", text=system_name, font=HEADER_FONT)
 
 
 def update_object_position(space, body):
@@ -106,9 +112,9 @@ def update_object_position(space, body):
     x = scale_x(body.x)
     y = scale_y(body.y)
     r = body.R
-    if x + r < 0 or x - r > window_width or y + r < 0 or y - r > window_height:
-        space.coords(body.image, window_width + r, window_height + r,
-                     window_width + 2*r, window_height + 2*r)  # положить за пределы окна
+    if x + r < 0 or x - r > WINDOW_WIDTH or y + r < 0 or y - r > WINDOW_HEIGHT:
+        space.coords(body.image, WINDOW_WIDTH + r, WINDOW_HEIGHT + r,
+                     WINDOW_WIDTH + 2 * r, WINDOW_HEIGHT + 2 * r)  # положить за пределы окна
     space.coords(body.image, x - r, y - r, x + r, y + r)
 
 
