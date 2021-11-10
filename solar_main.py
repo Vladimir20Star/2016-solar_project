@@ -29,6 +29,8 @@ class GlobalVariablesMain:
     time_speed = None
     """Ползунок скорости промотки времени на экране"""
 
+    max_distance = None
+
     space = None
     """Полотно для прорисовки"""
 
@@ -48,7 +50,7 @@ def execution():
     Цикличность выполнения зависит от значения глобальной переменной glob.perform_execution.
     При glob.perform_execution == True функция запрашивает вызов самой себя по таймеру через от 1 мс до 100 мс.
     """
-    model.recalculate_space_objects_positions(glob.space_objects, glob.time_step.get())
+    model.recalculate_space_objects_positions(glob.space_objects, glob.time_step.get(), glob.max_distance)
     for body in glob.space_objects:
         vis.update_object_position(glob.space, body)
     glob.physical_time += glob.time_step.get()
@@ -90,8 +92,8 @@ def open_file_dialog():
         glob.space.delete(obj.image)  # удаление старых изображений планет
     in_filename = askopenfilename(filetypes=(("Text file", ".txt"),))
     glob.space_objects = in_put.read_space_objects_data_from_file(in_filename)
-    max_distance = max([max(abs(obj.x), abs(obj.y)) for obj in glob.space_objects])
-    vis.calculate_scale_factor(max_distance)
+    glob.max_distance = max([max(abs(obj.x), abs(obj.y)) for obj in glob.space_objects])
+    vis.calculate_scale_factor(glob.max_distance)
 
     for obj in glob.space_objects:
         if obj.type == 'star':
