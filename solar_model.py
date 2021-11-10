@@ -22,8 +22,8 @@ def calculate_force(body, space_objects):
             continue  # тело не действует гравитационной силой на само себя!
         r = ((body.x - obj.x) ** 2 + (body.y - obj.y) ** 2) ** 0.5
         angle = math.atan2(body.y - obj.y, body.x - obj.x)
-        body.Fx += gravitational_constant * obj.m * body.m / r ** 2 * math.cos(angle)
-        body.Fy += gravitational_constant * obj.m * body.m / r ** 2 * math.sin(angle)
+        body.Fx -= gravitational_constant * obj.m * body.m / r ** 2 * math.cos(angle)
+        body.Fy -= gravitational_constant * obj.m * body.m / r ** 2 * math.sin(angle)
 
 
 def move_space_object(body, dt):
