@@ -88,7 +88,7 @@ class SolarProject:
         in_filename = askopenfilename(filetypes=(("Text file", ".txt"),))
         self.space_objects = in_put.read_space_objects_data_from_file(in_filename)
         self.max_distance = max([max(abs(obj.x), abs(obj.y)) for obj in self.space_objects])
-        vis.calculate_scale_factor(self.max_distance)
+        vis.scale.calculate_scale_factor(self.max_distance)
 
         for obj in self.space_objects:
             if obj.type == 'star':

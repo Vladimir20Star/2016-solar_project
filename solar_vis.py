@@ -16,49 +16,46 @@ HEADER_FONT = "Arial-16"
 """Шрифт в заголовке"""
 
 
-class GlobalVariablesVis:
-    """класс глобальных переменных этого файла"""
+class Scale:
+    """Класс масштабирования"""
+    def __init__(self):
+        self.scale_factor = None
+        """Масштабирование экранных координат по отношению к физическим.
+        Тип: float
+        Мера: количество пикселей на один метр."""
 
-    scale_factor = None
-    """Масштабирование экранных координат по отношению к физическим.
-    Тип: float
-    Мера: количество пикселей на один метр."""
+    def calculate_scale_factor(self, max_distance):
+        """Вычисляет значение глобальной переменной **glob_vis.scale_factor** по данной характерной длине"""
+        self.scale_factor = 0.4 * min(WINDOW_HEIGHT, WINDOW_WIDTH) / max_distance
+        print('Scale factor:', self.scale_factor)
+
+    def scale_x(self, x):
+        """Возвращает экранную **x** координату по **x** координате модели.
+        Принимает вещественное число, возвращает целое число.
+        В случае выхода **x** координаты за пределы экрана возвращает
+        координату, лежащую за пределами холста.
+
+        Параметры:
+
+        **x** — x-координата модели.
+        """
+        return int(x * self.scale_factor) + WINDOW_WIDTH // 2
+
+    def scale_y(self, y):
+        """Возвращает экранную **y** координату по **y** координате модели.
+        Принимает вещественное число, возвращает целое число.
+        В случае выхода **y** координаты за пределы экрана возвращает
+        координату, лежащую за пределами холста.
+        Направление оси развёрнуто, чтобы у модели ось **y** смотрела вверх.
+
+        Параметры:
+
+        **y** — y-координата модели.
+        """
+        return int(y * self.scale_factor) + WINDOW_HEIGHT // 2
 
 
-glob_vis = GlobalVariablesVis()
-
-
-def calculate_scale_factor(max_distance):
-    """Вычисляет значение глобальной переменной **glob_vis.scale_factor** по данной характерной длине"""
-    glob_vis.scale_factor = 0.4 * min(WINDOW_HEIGHT, WINDOW_WIDTH) / max_distance
-    print('Scale factor:', glob_vis.scale_factor)
-
-
-def scale_x(x):
-    """Возвращает экранную **x** координату по **x** координате модели.
-    Принимает вещественное число, возвращает целое число.
-    В случае выхода **x** координаты за пределы экрана возвращает
-    координату, лежащую за пределами холста.
-
-    Параметры:
-
-    **x** — x-координата модели.
-    """
-    return int(x * glob_vis.scale_factor) + WINDOW_WIDTH // 2
-
-
-def scale_y(y):
-    """Возвращает экранную **y** координату по **y** координате модели.
-    Принимает вещественное число, возвращает целое число.
-    В случае выхода **y** координаты за пределы экрана возвращает
-    координату, лежащую за пределами холста.
-    Направление оси развёрнуто, чтобы у модели ось **y** смотрела вверх.
-
-    Параметры:
-
-    **y** — y-координата модели.
-    """
-    return int(y * glob_vis.scale_factor) + WINDOW_HEIGHT // 2
+scale = Scale()
 
 
 def create_star_image(space, star):
@@ -69,8 +66,8 @@ def create_star_image(space, star):
     **space** — холст для рисования.
     **star** — объект звезды.
     """
-    x = scale_x(star.x)
-    y = scale_y(star.y)
+    x = scale.scale_x(star.x)
+    y = scale.scale_y(star.y)
     r = star.R
     star.image = space.create_oval([x - r, y - r], [x + r, y + r], fill=star.color, width=1)
 
@@ -83,8 +80,8 @@ def create_planet_image(space, planet):
     **space** — холст для рисования.
     **planet** — объект планеты.
     """
-    x = scale_x(planet.x)
-    y = scale_y(planet.y)
+    x = scale.scale_x(planet.x)
+    y = scale.scale_y(planet.y)
     r = planet.R
     planet.image = space.create_oval([x - r, y - r], [x + r, y + r], fill=planet.color, width=1)
 
@@ -109,13 +106,14 @@ def update_object_position(space, body):
     **space** — холст для рисования.
     **body** — тело, которое нужно переместить.
     """
-    x = scale_x(body.x)
-    y = scale_y(body.y)
+    x = scale.scale_x(body.x)
+    y = scale.scale_y(body.y)
     r = body.R
     if x + r < 0 or x - r > WINDOW_WIDTH or y + r < 0 or y - r > WINDOW_HEIGHT:
         space.coords(body.image, WINDOW_WIDTH + r, WINDOW_HEIGHT + r,
                      WINDOW_WIDTH + 2 * r, WINDOW_HEIGHT + 2 * r)  # положить за пределы окна
-    space.coords(body.image, x - r, y - r, x + r, y + r)
+    else:
+        space.coords(body.image, x - r, y - r, x + r, y + r)
 
 
 if __name__ == "__main__":
